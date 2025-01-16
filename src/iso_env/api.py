@@ -96,6 +96,16 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
             print(
                 f"Installed pyproject.toml in {py_project_toml_path}:\n{py_project_toml}"
             )
+        # Now force the install.
+        subprocess.run(
+            ["uv", "run", "python", "-c", "import os; _ = os.getcwd()"],
+            cwd=str(path),
+            check=True,
+            capture_output=True,
+            text=True,
+            shell=True,
+        )
+
         (path / "installed").touch()
     except KeyboardInterrupt:
         pass
