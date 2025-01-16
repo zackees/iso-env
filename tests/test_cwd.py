@@ -8,7 +8,6 @@ from pathlib import Path
 from iso_env.api import IsoEnv, IsoEnvArgs, Requirements
 
 REQUIREMENTS_TXT = """
-static-ffmpeg
 """
 
 
@@ -19,14 +18,11 @@ class MainTester(unittest.TestCase):
         """Test command line interface (CLI)."""
         args = IsoEnvArgs(
             venv_path=Path(".iso_env"),
-            build_info=Requirements(REQUIREMENTS_TXT, python_version="==3.10.*"),
+            build_info=Requirements(REQUIREMENTS_TXT),
         )
         iso = IsoEnv(args)
-        cp = iso.run(["static_ffmpeg", "-version"])
-        print(cp)
-
-        cp = iso.run(["pwd"])
-        print(cp)
+        cp = iso.run(["pwd"], capture_output=True, text=True, check=True)
+        print(cp.stdout)
         print()
 
 
