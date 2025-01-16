@@ -126,9 +126,9 @@ def installed(args: IsoEnvArgs) -> bool:
     return (venv_path / "installed").exists()
 
 
-def run(
+def open_proc(
     args: IsoEnvArgs, cmd_list: list[str] | str, **process_args
-) -> subprocess.CompletedProcess:
+) -> subprocess.Popen:
     """Runs the command using the isolated environment."""
     if not installed(args):
         purge(args.venv_path)
@@ -149,7 +149,40 @@ def run(
     else:
         full_cmd_str = f"{python_exe} -m uv run {cmd_list}"
     env = dict(os.environ)
-    cp = subprocess.run(full_cmd_str, env=env, shell=True, **process_args)
+    # cp = subprocess.run(full_cmd_str, env=env, shell=True, **process_args)
+    # return cp
+    capture_output = process_args.pop("capture_output", False)
+    if not capture_output:
+        proc = subprocess.Popen(full_cmd_str, env=env, shell=True, **process_args)
+        return proc
+    proc = subprocess.Popen(
+        full_cmd_str,
+        env=env,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        **process_args,
+    )
+    return proc
+
+
+def run(
+    args: IsoEnvArgs, cmd_list: list[str] | str, **process_args
+) -> subprocess.CompletedProcess:
+    """Runs the command using the isolated environment."""
+    check = process_args.pop("check", False)
+    proc = open_proc(args, cmd_list, **process_args)
+    proc.wait()
+    cp: subprocess.CompletedProcess = subprocess.CompletedProcess(
+        args=proc.args,
+        returncode=proc.returncode,
+        stdout=proc.stdout,
+        stderr=proc.stderr,
+    )
+    if check and cp.returncode != 0:
+        raise subprocess.CalledProcessError(
+            cp.returncode, cp.args, cp.stdout, cp.stderr
+        )
     return cp
 
 
@@ -161,3 +194,6 @@ class IsoEnv:
         self, cmd_list: list[str] | str, **process_args
     ) -> subprocess.CompletedProcess:
         return run(self.args, cmd_list, **process_args)
+
+    def open_proc(self, cmd_list: list[str] | str, **process_args) -> subprocess.Popen:
+        return open_proc(self.args, cmd_list, **process_args)

@@ -8,25 +8,22 @@ from pathlib import Path
 from iso_env import IsoEnv, IsoEnvArgs, Requirements
 
 REQUIREMENTS_TXT = """
-static-ffmpeg
 """
 
 
-class MainTester(unittest.TestCase):
+class CwdTester(unittest.TestCase):
     """Main tester class."""
 
-    def test_iso_env(self) -> None:
+    def test_iso_env_with_cwd(self) -> None:
         """Test command line interface (CLI)."""
         args = IsoEnvArgs(
-            venv_path=Path(".env_ffmpeg"),
-            build_info=Requirements(REQUIREMENTS_TXT, python_version="==3.10.*"),
+            venv_path=Path(".env_cwd"),
+            build_info=Requirements(REQUIREMENTS_TXT),
         )
         iso = IsoEnv(args)
-        cp = iso.run(["static_ffmpeg", "-version"])
-        print(cp)
-
-        cp = iso.run(["pwd"])
-        print(cp)
+        proc = iso.open_proc(["pwd"], text=True)
+        proc.wait()
+        print(proc.stdout)
         print()
 
 

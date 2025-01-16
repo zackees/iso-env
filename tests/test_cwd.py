@@ -5,16 +5,16 @@ Unit test file.
 import unittest
 from pathlib import Path
 
-from iso_env.api import IsoEnv, IsoEnvArgs, Requirements
+from iso_env import IsoEnv, IsoEnvArgs, Requirements
 
 REQUIREMENTS_TXT = """
 """
 
 
-class MainTester(unittest.TestCase):
+class CwdTester(unittest.TestCase):
     """Main tester class."""
 
-    def test_iso_env(self) -> None:
+    def test_iso_env_with_cwd(self) -> None:
         """Test command line interface (CLI)."""
         args = IsoEnvArgs(
             venv_path=Path(".env_cwd"),

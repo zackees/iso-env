@@ -5,7 +5,7 @@ Unit test file.
 import unittest
 from pathlib import Path
 
-from iso_env.api import IsoEnv, IsoEnvArgs, PyProjectToml
+from iso_env import IsoEnv, IsoEnvArgs, PyProjectToml
 
 PY_PROJECT_TOML = PyProjectToml(
     """
