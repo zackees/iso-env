@@ -140,3 +140,5 @@ dmypy.json
 .aider*
 
 .iso_env/
+.env_*
+.ruff_cache/

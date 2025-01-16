@@ -18,7 +18,7 @@ class MainTester(unittest.TestCase):
     def test_iso_env(self) -> None:
         """Test command line interface (CLI)."""
         args = IsoEnvArgs(
-            venv_path=Path(".iso_env"),
+            venv_path=Path(".env_ffmpeg"),
             build_info=Requirements(REQUIREMENTS_TXT, python_version="==3.10.*"),
         )
         iso = IsoEnv(args)

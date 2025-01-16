@@ -5,6 +5,7 @@ Unit test file.
 import os
 import shutil
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -152,19 +153,23 @@ def run(
     if not installed(args):
         purge(args.venv_path)
         install(args)
-    import sys
 
     python_exe = sys.executable
     if isinstance(cmd_list, list):
-        full_cmd = [python_exe, "-m", "uv", "run", "--isolated"] + cmd_list
+        full_cmd = [
+            python_exe,
+            "-m",
+            "uv",
+            "run",
+            "--isolated",
+            "--project",
+            str(args.venv_path),
+        ] + cmd_list
         full_cmd_str = subprocess.list2cmdline(full_cmd)
     else:
         full_cmd_str = f"{python_exe} -m uv run {cmd_list}"
     env = dict(os.environ)
-    # env.pop("VIRTUAL_ENV", None)
-    cwd = args.venv_path
-    print(f"Running: {full_cmd_str} in {cwd.resolve()}")
-    cp = subprocess.run(full_cmd_str, cwd=cwd, env=env, shell=True, **process_args)
+    cp = subprocess.run(full_cmd_str, env=env, shell=True, **process_args)
     return cp
 
 

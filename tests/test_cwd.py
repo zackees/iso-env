@@ -17,7 +17,7 @@ class MainTester(unittest.TestCase):
     def test_iso_env(self) -> None:
         """Test command line interface (CLI)."""
         args = IsoEnvArgs(
-            venv_path=Path(".iso_env"),
+            venv_path=Path(".env_cwd"),
             build_info=Requirements(REQUIREMENTS_TXT),
         )
         iso = IsoEnv(args)

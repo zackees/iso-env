@@ -41,7 +41,7 @@ class ComplexInstallTester(unittest.TestCase):
     def test_iso_env(self) -> None:
         """Test command line interface (CLI)."""
         args = IsoEnvArgs(
-            venv_path=Path(".iso_env"),
+            venv_path=Path(".env_torch"),
             build_info=PY_PROJECT_TOML,
         )
         iso = IsoEnv(args)

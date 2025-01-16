@@ -2,6 +2,7 @@
 set -x
 rm -rf venv
 rm -rf .venv
+rm -rf .env_*
 # remove all *.pyc files
 find . -name "*.pyc" -exec rm -rf {} \;
 # remove all *.egg files
