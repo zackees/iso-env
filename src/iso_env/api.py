@@ -84,26 +84,6 @@ def install(args: IsoEnvArgs) -> None:
         )
         py_project_toml_path = path / "pyproject.toml"
         py_project_toml_path.write_text(str(py_project_toml), encoding="utf-8")
-
-        # cmd_list = [
-        #     "uv",
-        #     "pip",
-        #     "install",
-        #     ".",
-        # ]
-
-        # # env["VIRTUAL_ENV"] = str(path / ".venv")
-        # # env.pop("VIRTUAL_ENV", None)
-        # cmd_str = subprocess.list2cmdline(cmd_list)
-        # print(f"Installing: {cmd_str} in {path.resolve()}")
-        # subprocess.run(
-        #     cmd_list,
-        #     cwd=str(path),
-        #     # env=env,
-        #     shell=True,
-        #     check=True,
-        #     text=True,
-        # )
         (path / "installed").touch()
     except KeyboardInterrupt:
         pass
