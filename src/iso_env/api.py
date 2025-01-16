@@ -63,19 +63,27 @@ def _to_pyproject_toml(build_info: Requirements | PyProjectToml) -> PyProjectTom
 
 
 # def install(path: Path, requirements_text: str) -> None:
-def install(args: IsoEnvArgs) -> None:
+def install(args: IsoEnvArgs, verbose: bool) -> None:
     """Uses isolated_environment to install aider."""
     # env: dict = dict(os.environ)
     try:
         path = args.venv_path
-        if installed(args):
+        if installed(args, verbose=verbose):
+            if verbose:
+                print(f"{path} is already installed.")
             return
         py_project_toml = _to_pyproject_toml(args.build_info)
         # Print installing message
         # Install aider using isolated_environment
         path.mkdir(exist_ok=True, parents=True)
+
+        cmd_list = ["uv", "venv"]
+        # cmd_str =
+        if verbose:
+            cmd_str = subprocess.list2cmdline(cmd_list)
+            print(f"Installing in {path} using command: {cmd_str}")
         subprocess.run(
-            ["uv", "venv"],
+            cmd_list,
             cwd=str(path),
             check=True,
             capture_output=True,
@@ -84,6 +92,10 @@ def install(args: IsoEnvArgs) -> None:
         )
         py_project_toml_path = path / "pyproject.toml"
         py_project_toml_path.write_text(str(py_project_toml), encoding="utf-8")
+        if verbose:
+            print(
+                f"Installed pyproject.toml in {py_project_toml_path}:\n{py_project_toml}"
+            )
         (path / "installed").touch()
     except KeyboardInterrupt:
         pass
@@ -113,26 +125,39 @@ def _santize(context: str) -> str:
 
 
 # def installed(venv_path: Path, requirements_text: str) -> bool:
-def installed(args: IsoEnvArgs) -> bool:
+def installed(args: IsoEnvArgs, verbose: bool) -> bool:
+    if verbose:
+        print(f"Checking if {args.venv_path} is installed.")
     venv_path = args.venv_path
     if not venv_path.exists():
+        if verbose:
+            print(f"{venv_path} does not exist.")
         return False
     pyproject_toml_path = venv_path / "pyproject.toml"
     if not pyproject_toml_path.exists():
+        if verbose:
+            print(f"{pyproject_toml_path} does not exist.")
         return False
     pyproject_toml = _to_pyproject_toml(args.build_info)
+    if verbose:
+        print(f"Checking {pyproject_toml_path} and {pyproject_toml}")
     if _santize(pyproject_toml_path.read_text()) != _santize(str(pyproject_toml)):
+        if verbose:
+            print(f"{pyproject_toml_path} is different.")
         return False
-    return (venv_path / "installed").exists()
+    out = (venv_path / "installed").exists()
+    if verbose:
+        print(f"Installed: {out}")
+    return out
 
 
 def open_proc(
-    args: IsoEnvArgs, cmd_list: list[str] | str, **process_args
+    args: IsoEnvArgs, cmd_list: list[str] | str, verbose=False, **process_args
 ) -> subprocess.Popen:
     """Runs the command using the isolated environment."""
-    if not installed(args):
+    if not installed(args, verbose=verbose):
         purge(args.venv_path)
-        install(args)
+        install(args, verbose=verbose)
 
     python_exe = sys.executable
     if isinstance(cmd_list, list):
@@ -153,6 +178,9 @@ def open_proc(
     # return cp
     capture_output = process_args.pop("capture_output", False)
     shell = process_args.pop("shell", True)
+    if verbose:
+        full_path = Path(".").resolve()
+        print(f"Running in {full_path}: {full_cmd_str}")
     if not capture_output:
         proc = subprocess.Popen(full_cmd_str, env=env, shell=shell, **process_args)
         return proc
@@ -169,11 +197,11 @@ def open_proc(
 
 
 def run(
-    args: IsoEnvArgs, cmd_list: list[str] | str, **process_args
+    args: IsoEnvArgs, cmd_list: list[str] | str, verbose=False, **process_args
 ) -> subprocess.CompletedProcess:
     """Runs the command using the isolated environment."""
     check = process_args.pop("check", False)
-    proc = open_proc(args, cmd_list, **process_args)
+    proc = open_proc(args, cmd_list, verbose=verbose, **process_args)
     proc.wait()
     cp: subprocess.CompletedProcess = subprocess.CompletedProcess(
         args=proc.args,
