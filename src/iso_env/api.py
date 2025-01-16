@@ -59,19 +59,19 @@ def purge(path: Path) -> int:
         return 1
 
 
-def installed(path: Path) -> bool:
+def installed(venv_path: Path) -> bool:
     here = Path(__file__).parent
-    dst = path / "trampoline.py"
+    dst = venv_path / "trampoline.py"
     if not dst.exists():
-        path.mkdir(parents=True, exist_ok=True)
-        shutil.copy(here / "trampoline.py", path / "trampoline.py")
-    return (path / "installed").exists()
+        venv_path.mkdir(parents=True, exist_ok=True)
+        shutil.copy(here / "trampoline.py", venv_path / "trampoline.py")
+    return (venv_path / "installed").exists()
 
 
 class IsoEnv:
-    def __init__(self, path: Path, requirements: str) -> None:
-        self.path = path
+    def __init__(self, venv_path: Path, requirements: str) -> None:
+        self.venv_path = venv_path
         self.requirements = requirements
 
     def run(self, cmd_list: list[str], **process_args) -> subprocess.CompletedProcess:
-        return run(self.path, self.requirements, cmd_list, **process_args)
+        return run(self.venv_path, self.requirements, cmd_list, **process_args)
