@@ -82,29 +82,35 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
         if verbose:
             cmd_str = subprocess.list2cmdline(cmd_list)
             print(f"Installing in {path} using command: {cmd_str}")
-        subprocess.run(
-            cmd_list,
-            cwd=str(path),
-            check=True,
-            capture_output=True,
-            text=True,
-            shell=True,
-        )
+        try:
+            subprocess.run(
+                cmd_list,
+                cwd=str(path),
+                check=True,
+                capture_output=True,
+                text=True,
+                shell=True,
+            )
+        except subprocess.CalledProcessError as e:
+            print(f"Error creating venv: {e}\n: {e.stdout}, \n{e.stderr}")
+            raise
         py_project_toml_path = path / "pyproject.toml"
         py_project_toml_path.write_text(str(py_project_toml), encoding="utf-8")
         if verbose:
-            print(
-                f"Installed pyproject.toml in {py_project_toml_path}:\n{py_project_toml}"
+            cmd_str = subprocess.list2cmdline(cmd_list)
+            print(f"Installing in {path} using command: {cmd_str}")
+        try:
+            _ = subprocess.run(
+                cmd_list,
+                cwd=str(path),
+                check=True,
+                capture_output=True,
+                text=True,
+                shell=True,
             )
-        # Now force the install.
-        subprocess.run(
-            ["uv", "run", "python", "-c", "import os; _ = os.getcwd()"],
-            cwd=str(path),
-            check=True,
-            capture_output=True,
-            text=True,
-            shell=True,
-        )
+        except subprocess.CalledProcessError as e:
+            print(f"Error creating venv: {e}\n: {e.stdout}, \n{e.stderr}")
+            raise
 
         (path / "installed").touch()
     except KeyboardInterrupt:
