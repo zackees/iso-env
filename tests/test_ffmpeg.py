@@ -5,7 +5,7 @@ Unit test file.
 import unittest
 from pathlib import Path
 
-from iso_env.api import IsoEnv
+from iso_env.api import IsoEnv, IsoEnvArgs
 
 REQUIREMENTS_TXT = """
 static-ffmpeg
@@ -17,8 +17,11 @@ class MainTester(unittest.TestCase):
 
     def test_iso_env(self) -> None:
         """Test command line interface (CLI)."""
-        path = Path("iso_env")
-        iso = IsoEnv(path, REQUIREMENTS_TXT)
+        args = IsoEnvArgs(
+            venv_path=Path("iso_env"),
+            requirements=REQUIREMENTS_TXT,
+        )
+        iso = IsoEnv(args)
         cp = iso.run(["static_ffmpeg", "-version"])
         print(cp)
 

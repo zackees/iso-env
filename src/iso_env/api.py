@@ -5,6 +5,7 @@ Unit test file.
 import os
 import shutil
 import subprocess
+from dataclasses import dataclass
 from pathlib import Path
 
 
@@ -68,10 +69,16 @@ def installed(venv_path: Path) -> bool:
     return (venv_path / "installed").exists()
 
 
+@dataclass
+class IsoEnvArgs:
+    venv_path: Path
+    requirements: str
+
+
 class IsoEnv:
-    def __init__(self, venv_path: Path, requirements: str) -> None:
-        self.venv_path = venv_path
-        self.requirements = requirements
+    def __init__(self, args: IsoEnvArgs) -> None:
+        self.venv_path = args.venv_path
+        self.requirements = args.requirements
 
     def run(self, cmd_list: list[str], **process_args) -> subprocess.CompletedProcess:
         return run(self.venv_path, self.requirements, cmd_list, **process_args)
