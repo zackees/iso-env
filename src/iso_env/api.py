@@ -160,19 +160,20 @@ def open_proc(
         install(args, verbose=verbose)
 
     python_exe = sys.executable
+    preamble = [
+        python_exe,
+        "-m",
+        "uv",
+        "run",
+        "--isolated",
+        "--project",
+        str(args.venv_path),
+    ]
     if isinstance(cmd_list, list):
-        full_cmd = [
-            python_exe,
-            "-m",
-            "uv",
-            "run",
-            "--isolated",
-            "--project",
-            str(args.venv_path),
-        ] + cmd_list
+        full_cmd = preamble + cmd_list
         full_cmd_str = subprocess.list2cmdline(full_cmd)
     else:
-        full_cmd_str = f"{python_exe} -m uv run {cmd_list}"
+        full_cmd_str = subprocess.list2cmdline(preamble) + " " + cmd_list
     env = dict(os.environ)
     # cp = subprocess.run(full_cmd_str, env=env, shell=True, **process_args)
     # return cp
