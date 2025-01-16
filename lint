@@ -2,16 +2,16 @@
 set -e
 
 echo Running ruff src
-uvx ruff check --fix src
+uv run ruff check --fix src
 echo Running ruff tests
-uvx ruff check --fix tests
+uv run ruff check --fix tests
 echo Running black src tests
-uvx black src tests
+uv run black src tests
 echo Running isort src tests
-uvx isort --profile black src tests
+uv run isort --profile black src tests
 echo Running flake8 src tests
-uvx flake8 src tests
+uv run flake8 src tests
 echo Running mypy src
-uvx mypy src tests
+uv run mypy src tests
 echo Linting complete!
 exit 0

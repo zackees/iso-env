@@ -5,7 +5,7 @@ Unit test file.
 import os
 import unittest
 
-COMMAND = "iso"
+COMMAND = "iso-env"
 
 
 class MainTester(unittest.TestCase):
