@@ -152,10 +152,11 @@ def open_proc(
     # cp = subprocess.run(full_cmd_str, env=env, shell=True, **process_args)
     # return cp
     capture_output = process_args.pop("capture_output", False)
-    if not capture_output:
-        proc = subprocess.Popen(full_cmd_str, env=env, shell=True, **process_args)
-        return proc
     shell = process_args.pop("shell", True)
+    if not capture_output:
+        proc = subprocess.Popen(full_cmd_str, env=env, shell=shell, **process_args)
+        return proc
+
     proc = subprocess.Popen(
         full_cmd_str,
         env=env,
