@@ -73,7 +73,7 @@ def install(args: IsoEnvArgs) -> None:
         py_project_toml = _to_pyproject_toml(args.build_info)
         # Print installing message
         # Install aider using isolated_environment
-        path.mkdir(exist_ok=True)
+        path.mkdir(exist_ok=True, parents=True)
         subprocess.run(
             ["uv", "venv"],
             cwd=str(path),
