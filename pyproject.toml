@@ -3,7 +3,7 @@ requires = ["setuptools>=65.5.1", "setuptools-scm", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "iso_env"
+name = "uv_iso_env"
 readme = "README.md"
 description = "isolated environment2, re-written using uv"
 requires-python = ">=3.10"
@@ -11,8 +11,8 @@ keywords = ["template-python-cmd"]
 license = { text = "BSD 3-Clause License" }
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
+    "twine>=6.0.1",
     "uv",
-
 ]
 # Change this with the version number bump.
 version = "1.0.0"
