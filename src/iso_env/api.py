@@ -6,37 +6,9 @@ import os
 import shutil
 import subprocess
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 
-
-@dataclass
-class Requirements:
-    content: str
-    python_version: str | None = None
-
-    def __post_init__(self):
-        self.content = self.content.strip()
-
-    def __repr__(self):
-        return self.content
-
-
-@dataclass
-class PyProjectToml:
-    content: str
-
-    def __post_init__(self):
-        self.content = self.content.strip()
-
-    def __repr__(self):
-        return self.content
-
-
-@dataclass
-class IsoEnvArgs:
-    venv_path: Path
-    build_info: Requirements | PyProjectToml
+from iso_env.types import IsoEnvArgs, PyProjectToml, Requirements
 
 
 def _to_requirements(build_info: Requirements) -> PyProjectToml:
@@ -64,7 +36,7 @@ def _to_pyproject_toml(build_info: Requirements | PyProjectToml) -> PyProjectTom
 
 # def install(path: Path, requirements_text: str) -> None:
 def install(args: IsoEnvArgs, verbose: bool) -> None:
-    """Uses isolated_environment to install aider."""
+    """Uses isolated_environment to install."""
     # env: dict = dict(os.environ)
     try:
         path = args.venv_path
@@ -74,7 +46,7 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
             return
         py_project_toml = _to_pyproject_toml(args.build_info)
         # Print installing message
-        # Install aider using isolated_environment
+        # Install using isolated_environment
         path.mkdir(exist_ok=True, parents=True)
 
         cmd_list = ["uv", "venv"]
@@ -127,7 +99,7 @@ def purge(venv_path: Path) -> int:
         print("purged successfully.")
         return 0
     except Exception as e:
-        print(f"Error purging aider: {e}")
+        print(f"Error purging: {e}")
         return 1
 
 
