@@ -139,13 +139,9 @@ def installed(args: IsoEnvArgs, verbose: bool) -> bool:
     return out
 
 
-def open_proc(
+def _to_full_cmd_str(
     args: IsoEnvArgs, cmd_list: list[str] | str, verbose=False, **process_args
-) -> subprocess.Popen:
-    """Runs the command using the isolated environment."""
-    if not installed(args, verbose=verbose):
-        purge(args.venv_path)
-        install(args, verbose=verbose)
+) -> str:
 
     python_exe = sys.executable
     preamble = [
@@ -162,6 +158,17 @@ def open_proc(
         full_cmd_str = subprocess.list2cmdline(full_cmd)
     else:
         full_cmd_str = subprocess.list2cmdline(preamble) + " " + cmd_list
+    return full_cmd_str
+
+
+def open_proc(
+    args: IsoEnvArgs, cmd_list: list[str] | str, verbose=False, **process_args
+) -> subprocess.Popen:
+    """Runs the command using the isolated environment."""
+    if not installed(args, verbose=verbose):
+        purge(args.venv_path)
+        install(args, verbose=verbose)
+    full_cmd_str = _to_full_cmd_str(args, cmd_list, verbose=verbose, **process_args)
     env = dict(os.environ)
     # cp = subprocess.run(full_cmd_str, env=env, shell=True, **process_args)
     # return cp
@@ -189,19 +196,11 @@ def run(
     args: IsoEnvArgs, cmd_list: list[str] | str, verbose=False, **process_args
 ) -> subprocess.CompletedProcess:
     """Runs the command using the isolated environment."""
-    check = process_args.pop("check", False)
-    proc = open_proc(args, cmd_list, verbose=verbose, **process_args)
-    proc.wait()
-    cp: subprocess.CompletedProcess = subprocess.CompletedProcess(
-        args=proc.args,
-        returncode=proc.returncode,
-        stdout=proc.stdout,
-        stderr=proc.stderr,
-    )
-    if check and cp.returncode != 0:
-        raise subprocess.CalledProcessError(
-            cp.returncode, cp.args, cp.stdout, cp.stderr
-        )
+    if not installed(args, verbose=verbose):
+        purge(args.venv_path)
+        install(args, verbose=verbose)
+    full_cmd_str = _to_full_cmd_str(args, cmd_list, verbose=verbose, **process_args)
+    cp = subprocess.run(full_cmd_str, **process_args)
     return cp
 
 
