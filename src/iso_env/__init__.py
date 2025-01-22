@@ -4,7 +4,7 @@ from .types import IsoEnv, IsoEnvArgs, PyProjectToml, Requirements
 
 
 def iso_run(
-    args: IsoEnvArgs, cmd_list: list[str] | str, **process_args
+    args: IsoEnvArgs, cmd_list: list[str], **process_args
 ) -> subprocess.CompletedProcess:
     """Runs the command using the isolated environment."""
     from .run import run

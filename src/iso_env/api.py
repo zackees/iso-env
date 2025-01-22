@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 
 from iso_env.types import IsoEnvArgs, PyProjectToml, Requirements
-from iso_env.util import get_verbose_from_env, to_full_cmd_str
+from iso_env.util import get_verbose_from_env, to_full_cmd_list
 
 
 def _to_requirements(build_info: Requirements) -> PyProjectToml:
@@ -139,7 +139,7 @@ def installed(args: IsoEnvArgs, verbose: bool) -> bool:
 
 def open_proc(
     args: IsoEnvArgs,
-    cmd_list: list[str] | str,
+    cmd_list: list[str],
     verbose: bool | None = None,
     **process_args,
 ) -> subprocess.Popen:
@@ -148,7 +148,7 @@ def open_proc(
     if not installed(args, verbose=verbose):
         purge(args.venv_path)
         install(args, verbose=verbose)
-    full_cmd_str = to_full_cmd_str(args, cmd_list, verbose=verbose, **process_args)
+    full_cmd_str = to_full_cmd_list(args, cmd_list, verbose=verbose, **process_args)
     shell = process_args.pop("shell", True)
     if verbose:
         full_path = Path(".").resolve()

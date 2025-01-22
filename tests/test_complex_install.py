@@ -6,9 +6,9 @@ import os
 import unittest
 from pathlib import Path
 
-os.environ["ISO_ENV_VERBOSE"] = "1"
-
 from iso_env import IsoEnv, IsoEnvArgs, PyProjectToml
+
+os.environ["ISO_ENV_VERBOSE"] = "1"
 
 PY_PROJECT_TOML = PyProjectToml(
     """
@@ -48,7 +48,8 @@ class ComplexInstallTester(unittest.TestCase):
             build_info=PY_PROJECT_TOML,
         )
         iso = IsoEnv(args)
-        cp = iso.run('python -c "import torch; print(torch.__version__)"', check=True)
+        cmd_list = ["python", "-c", "import torch; print(torch.__version__)"]
+        cp = iso.run(cmd_list, check=True)
         print(cp)
 
 

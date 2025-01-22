@@ -7,7 +7,7 @@ from iso_env.util import get_verbose_from_env
 
 def run(
     args: IsoEnvArgs,
-    cmd_list: list[str] | str,
+    cmd_list: list[str],
     verbose: bool | None = None,
     **process_args,
 ) -> subprocess.CompletedProcess:

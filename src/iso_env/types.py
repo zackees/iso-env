@@ -36,14 +36,12 @@ class IsoEnv:
     def __init__(self, args: IsoEnvArgs) -> None:
         self.args = args
 
-    def run(
-        self, cmd_list: list[str] | str, **process_args
-    ) -> subprocess.CompletedProcess:
+    def run(self, cmd_list: list[str], **process_args) -> subprocess.CompletedProcess:
         from iso_env.run import run
 
         return run(self.args, cmd_list, **process_args)
 
-    def open_proc(self, cmd_list: list[str] | str, **process_args) -> subprocess.Popen:
+    def open_proc(self, cmd_list: list[str], **process_args) -> subprocess.Popen:
         from iso_env.api import open_proc
 
         return open_proc(self.args, cmd_list, **process_args)
