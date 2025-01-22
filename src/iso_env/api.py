@@ -179,8 +179,6 @@ def open_proc(
         full_cmd_str,
         env=env,
         shell=shell,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
         **process_args,
     )
     return proc
