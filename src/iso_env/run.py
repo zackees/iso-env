@@ -40,7 +40,7 @@ def open_proc(
         purge(args.venv_path)
         install(args, verbose=verbose)
     full_cmd_list = to_full_cmd_list(args, cmd_list, verbose=verbose, **process_args)
-    shell = process_args.pop("shell", True)
+    shell = process_args.pop("shell", False)
     if verbose:
         full_path = Path(".").resolve()
         full_cmd_str = subprocess.list2cmdline(full_cmd_list)
