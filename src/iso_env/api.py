@@ -185,12 +185,24 @@ def open_proc(
         full_path = Path(".").resolve()
         print(f"Running in {full_path}: {full_cmd_str}")
 
+    env = _get_env(**process_args)
     proc = subprocess.Popen(
         cmd_list,
         shell=shell,
+        env=env,
         **process_args,
     )
     return proc
+
+
+def _get_env(**process_args) -> dict[str, str]:
+    if "env" in process_args:
+        env = process_args["env"]
+    else:
+        env = dict(os.environ)
+    if "VIRTUAL_ENV" in env:
+        del env["VIRTUAL_ENV"]
+    return env
 
 
 def run(
@@ -204,8 +216,9 @@ def run(
     if not installed(args, verbose=verbose):
         purge(args.venv_path)
         install(args, verbose=verbose)
+    env = _get_env(**process_args)
     full_cmd_str = _to_full_cmd_str(args, cmd_list, verbose=verbose, **process_args)
-    cp = subprocess.run(full_cmd_str, **process_args)
+    cp = subprocess.run(full_cmd_str, env=env, **process_args)
     return cp
 
 
