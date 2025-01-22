@@ -150,6 +150,7 @@ def open_proc(
         install(args, verbose=verbose)
     full_cmd_list = to_full_cmd_list(args, cmd_list, verbose=verbose, **process_args)
     shell = process_args.pop("shell", True)
+    env = _get_env(**process_args)
     if verbose:
         full_path = Path(".").resolve()
         full_cmd_str = subprocess.list2cmdline(full_cmd_list)
