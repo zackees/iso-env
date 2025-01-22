@@ -5,14 +5,10 @@ Unit test file.
 import os
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 
 from iso_env.types import IsoEnvArgs, PyProjectToml, Requirements
-
-
-def _verbose() -> bool:
-    return os.environ.get("ISO_ENV_VERBOSE", "0") == "1"
+from iso_env.util import get_verbose_from_env, to_full_cmd_str
 
 
 def _to_requirements(build_info: Requirements) -> PyProjectToml:
@@ -148,31 +144,6 @@ def installed(args: IsoEnvArgs, verbose: bool) -> bool:
     return out
 
 
-def _to_full_cmd_str(
-    args: IsoEnvArgs,
-    cmd_list: list[str] | str,
-    verbose: bool | None = False,
-    **process_args,
-) -> str:
-    verbose = verbose if verbose is not None else _verbose()
-
-    python_exe = sys.executable
-    preamble = [
-        python_exe,
-        "-m",
-        "uv",
-        "run",
-        "--project",
-        str(args.venv_path),
-    ]
-    if isinstance(cmd_list, list):
-        full_cmd = preamble + cmd_list
-        full_cmd_str = subprocess.list2cmdline(full_cmd)
-    else:
-        full_cmd_str = subprocess.list2cmdline(preamble) + " " + cmd_list
-    return full_cmd_str
-
-
 def open_proc(
     args: IsoEnvArgs,
     cmd_list: list[str] | str,
@@ -180,11 +151,11 @@ def open_proc(
     **process_args,
 ) -> subprocess.Popen:
     """Runs the command using the isolated environment."""
-    verbose = verbose if verbose is not None else _verbose()
+    verbose = verbose if verbose is not None else get_verbose_from_env()
     if not installed(args, verbose=verbose):
         purge(args.venv_path)
         install(args, verbose=verbose)
-    full_cmd_str = _to_full_cmd_str(args, cmd_list, verbose=verbose, **process_args)
+    full_cmd_str = to_full_cmd_str(args, cmd_list, verbose=verbose, **process_args)
     shell = process_args.pop("shell", True)
     if verbose:
         full_path = Path(".").resolve()
@@ -208,33 +179,3 @@ def _get_env(**process_args) -> dict[str, str]:
     if "VIRTUAL_ENV" in env:
         del env["VIRTUAL_ENV"]
     return env
-
-
-def run(
-    args: IsoEnvArgs,
-    cmd_list: list[str] | str,
-    verbose: bool | None = None,
-    **process_args,
-) -> subprocess.CompletedProcess:
-    """Runs the command using the isolated environment."""
-    verbose = verbose if verbose is not None else _verbose()
-    if not installed(args, verbose=verbose):
-        purge(args.venv_path)
-        install(args, verbose=verbose)
-    env = _get_env(**process_args)
-    full_cmd_str = _to_full_cmd_str(args, cmd_list, verbose=verbose, **process_args)
-    cp = subprocess.run(full_cmd_str, env=env, **process_args)
-    return cp
-
-
-class IsoEnv:
-    def __init__(self, args: IsoEnvArgs) -> None:
-        self.args = args
-
-    def run(
-        self, cmd_list: list[str] | str, **process_args
-    ) -> subprocess.CompletedProcess:
-        return run(self.args, cmd_list, **process_args)
-
-    def open_proc(self, cmd_list: list[str] | str, **process_args) -> subprocess.Popen:
-        return open_proc(self.args, cmd_list, **process_args)
