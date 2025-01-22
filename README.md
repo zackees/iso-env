@@ -94,7 +94,7 @@ class ComplexInstallTester(unittest.TestCase):
             build_info=PY_PROJECT_TOML,
         )
         iso = IsoEnv(args)
-        cp = iso.run('python -c "import torch; print(torch.__version__)"', check=True)
+        cp = iso.run(['python', '-c', "import torch; print(torch.__version__)"], check=True)
         print(cp)
 
 
