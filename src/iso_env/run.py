@@ -1,13 +1,10 @@
+import os
 import subprocess
 from pathlib import Path
 
 from iso_env.api import install, installed, purge
 from iso_env.types import IsoEnvArgs
-from iso_env.util import (
-    clean_virtual_env_from_env,
-    get_verbose_from_env,
-    to_full_cmd_list,
-)
+from iso_env.util import get_verbose_from_env, to_full_cmd_list
 
 
 def run(
@@ -21,7 +18,11 @@ def run(
     if not installed(args, verbose=verbose):
         purge(args.venv_path)
         install(args, verbose=verbose)
-    env = clean_virtual_env_from_env(**process_args)
+    env = dict(os.environ)
+    if "env" in process_args:
+        env = process_args.pop("env")
+    if "VIRTUAL_ENV" in env:
+        del env["VIRTUAL_ENV"]
     full_cmd_list = to_full_cmd_list(args, cmd_list, verbose=verbose, **process_args)
     cp = subprocess.run(full_cmd_list, env=env, **process_args)
     return cp
@@ -45,8 +46,13 @@ def open_proc(
         full_cmd_str = subprocess.list2cmdline(full_cmd_list)
         print(f"Running in {full_path}: {full_cmd_str}")
 
-    env = clean_virtual_env_from_env(**process_args)
-    proc = subprocess.Popen(
+    env = dict(os.environ)
+    if "env" in process_args:
+        env = process_args.pop("env")
+    if "VIRTUAL_ENV" in env:
+        del env["VIRTUAL_ENV"]
+
+    proc = subprocess.Popen(  # type: ignore
         full_cmd_list,
         shell=shell,
         env=env,

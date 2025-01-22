@@ -26,14 +26,3 @@ def to_full_cmd_list(
         str(args.venv_path),
     ]
     return preamble + cmd_list
-
-
-def clean_virtual_env_from_env(**process_args) -> dict[str, str]:
-    if "env" in process_args:
-        env = process_args["env"]
-        process_args.pop("env")
-    else:
-        env = dict(os.environ)
-    if "VIRTUAL_ENV" in env:
-        del env["VIRTUAL_ENV"]
-    return env

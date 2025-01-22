@@ -144,3 +144,6 @@ dmypy.json
 .ruff_cache/
 activate
 uv.lock
+
+!.aider.conf.yml
+!.aiderignore

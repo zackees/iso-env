@@ -32,6 +32,12 @@ class IsoEnvArgs:
     build_info: Requirements | PyProjectToml
 
 
+@dataclass
+class EnvironmentPartition:
+    env: dict[str, str]
+    process_args: dict[str, str]
+
+
 class IsoEnv:
     def __init__(self, args: IsoEnvArgs) -> None:
         self.args = args
