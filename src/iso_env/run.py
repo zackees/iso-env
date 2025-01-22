@@ -1,5 +1,6 @@
 import os
 import subprocess
+import warnings
 from pathlib import Path
 
 from iso_env.api import install, installed, purge
@@ -24,8 +25,16 @@ def run(
     if "VIRTUAL_ENV" in env:
         del env["VIRTUAL_ENV"]
     full_cmd_list = to_full_cmd_list(args, cmd_list, verbose=verbose, **process_args)
-    cp = subprocess.run(full_cmd_list, env=env, **process_args)
-    return cp
+    check = process_args.pop("check", True)
+    try:
+        cp = subprocess.run(full_cmd_list, env=env, check=check, **process_args)
+        return cp
+    except subprocess.CalledProcessError as exc:
+        stderr = exc.stderr
+        stdout = exc.stdout
+        error_msg = f"Failed to run: {exc.cmd} {exc.returncode}\nstdout: {stdout}\nstderr: {stderr}"
+        warnings.warn(error_msg)
+        raise
 
 
 def open_proc(
