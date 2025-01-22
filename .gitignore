@@ -142,3 +142,4 @@ dmypy.json
 .iso_env/
 .env_*
 .ruff_cache/
+activate
