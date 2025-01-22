@@ -52,6 +52,9 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
         # Print installing message
         # Install using isolated_environment
         path.mkdir(exist_ok=True, parents=True)
+        env = dict(os.environ)
+        if "VIRTUAL_ENV" in env:
+            del env["VIRTUAL_ENV"]
 
         cmd_list = ["uv", "venv"]
         # cmd_str =
@@ -66,6 +69,7 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
                 capture_output=True,
                 text=True,
                 shell=True,
+                env=env,
             )
         except subprocess.CalledProcessError as e:
             print(f"Error creating venv: {e}\n: {e.stdout}, \n{e.stderr}")
@@ -83,6 +87,7 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
                 capture_output=True,
                 text=True,
                 shell=True,
+                env=env,
             )
         except subprocess.CalledProcessError as e:
             print(f"Error creating venv: {e}\n: {e.stdout}, \n{e.stderr}")
@@ -144,10 +149,7 @@ def installed(args: IsoEnvArgs, verbose: bool) -> bool:
 
 
 def _to_full_cmd_str(
-    args: IsoEnvArgs,
-    cmd_list: list[str] | str,
-    verbose: bool | None = False,
-    **process_args,
+    args: IsoEnvArgs, cmd_list: list[str] | str, verbose: bool | None = False
 ) -> str:
     verbose = verbose if verbose is not None else _verbose()
 
