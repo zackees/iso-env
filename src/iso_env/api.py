@@ -148,15 +148,16 @@ def open_proc(
     if not installed(args, verbose=verbose):
         purge(args.venv_path)
         install(args, verbose=verbose)
-    full_cmd_str = to_full_cmd_list(args, cmd_list, verbose=verbose, **process_args)
+    full_cmd_list = to_full_cmd_list(args, cmd_list, verbose=verbose, **process_args)
     shell = process_args.pop("shell", True)
     if verbose:
         full_path = Path(".").resolve()
+        full_cmd_str = subprocess.list2cmdline(full_cmd_list)
         print(f"Running in {full_path}: {full_cmd_str}")
 
     env = _get_env(**process_args)
     proc = subprocess.Popen(
-        cmd_list,
+        full_cmd_list,
         shell=shell,
         env=env,
         **process_args,
