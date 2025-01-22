@@ -149,7 +149,10 @@ def installed(args: IsoEnvArgs, verbose: bool) -> bool:
 
 
 def _to_full_cmd_str(
-    args: IsoEnvArgs, cmd_list: list[str] | str, verbose: bool | None = False
+    args: IsoEnvArgs,
+    cmd_list: list[str] | str,
+    verbose: bool | None = False,
+    **process_args,
 ) -> str:
     verbose = verbose if verbose is not None else _verbose()
 
