@@ -170,16 +170,10 @@ def open_proc(
         install(args, verbose=verbose)
     full_cmd_str = _to_full_cmd_str(args, cmd_list, verbose=verbose, **process_args)
     env = dict(os.environ)
-    # cp = subprocess.run(full_cmd_str, env=env, shell=True, **process_args)
-    # return cp
-    capture_output = process_args.pop("capture_output", False)
     shell = process_args.pop("shell", True)
     if verbose:
         full_path = Path(".").resolve()
         print(f"Running in {full_path}: {full_cmd_str}")
-    if not capture_output:
-        proc = subprocess.Popen(full_cmd_str, env=env, shell=shell, **process_args)
-        return proc
 
     proc = subprocess.Popen(
         full_cmd_str,
