@@ -490,7 +490,7 @@ wheels = [
 
 [[package]]
 name = "uv-iso-env"
-version = "1.0.18"
+version = "1.0.19"
 source = { editable = "." }
 dependencies = [
     { name = "twine" },
