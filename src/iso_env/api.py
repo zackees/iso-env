@@ -169,6 +169,7 @@ def open_proc(
 def _get_env(**process_args) -> dict[str, str]:
     if "env" in process_args:
         env = process_args["env"]
+        process_args.pop("env")
     else:
         env = dict(os.environ)
     if "VIRTUAL_ENV" in env:
