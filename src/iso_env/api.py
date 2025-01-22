@@ -176,7 +176,7 @@ def open_proc(
         print(f"Running in {full_path}: {full_cmd_str}")
 
     proc = subprocess.Popen(
-        full_cmd_str,
+        cmd_list,
         env=env,
         shell=shell,
         **process_args,
