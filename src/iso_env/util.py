@@ -13,7 +13,7 @@ def to_full_cmd_str(
     args: IsoEnvArgs,
     cmd_list: list[str] | str,
     verbose: bool | None = False,
-    **process_args,
+    **process_args,  # needed to capture unexpected arguments
 ) -> str:
     verbose = verbose if verbose is not None else get_verbose_from_env()
 
