@@ -2,12 +2,17 @@
 Unit test file.
 """
 
+import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 from iso_env.types import IsoEnvArgs, PyProjectToml, Requirements
+
+
+def _verbose() -> bool:
+    return os.environ.get("ISO_ENV_VERBOSE", "0") == "1"
 
 
 def _to_requirements(build_info: Requirements) -> PyProjectToml:
@@ -139,8 +144,12 @@ def installed(args: IsoEnvArgs, verbose: bool) -> bool:
 
 
 def _to_full_cmd_str(
-    args: IsoEnvArgs, cmd_list: list[str] | str, verbose=False, **process_args
+    args: IsoEnvArgs,
+    cmd_list: list[str] | str,
+    verbose: bool | None = False,
+    **process_args,
 ) -> str:
+    verbose = verbose if verbose is not None else _verbose()
 
     python_exe = sys.executable
     preamble = [
@@ -148,7 +157,6 @@ def _to_full_cmd_str(
         "-m",
         "uv",
         "run",
-        "--isolated",
         "--project",
         str(args.venv_path),
     ]
@@ -161,9 +169,13 @@ def _to_full_cmd_str(
 
 
 def open_proc(
-    args: IsoEnvArgs, cmd_list: list[str] | str, verbose=False, **process_args
+    args: IsoEnvArgs,
+    cmd_list: list[str] | str,
+    verbose: bool | None = None,
+    **process_args,
 ) -> subprocess.Popen:
     """Runs the command using the isolated environment."""
+    verbose = verbose if verbose is not None else _verbose()
     if not installed(args, verbose=verbose):
         purge(args.venv_path)
         install(args, verbose=verbose)
@@ -182,9 +194,13 @@ def open_proc(
 
 
 def run(
-    args: IsoEnvArgs, cmd_list: list[str] | str, verbose=False, **process_args
+    args: IsoEnvArgs,
+    cmd_list: list[str] | str,
+    verbose: bool | None = None,
+    **process_args,
 ) -> subprocess.CompletedProcess:
     """Runs the command using the isolated environment."""
+    verbose = verbose if verbose is not None else _verbose()
     if not installed(args, verbose=verbose):
         purge(args.venv_path)
         install(args, verbose=verbose)
