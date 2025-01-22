@@ -5,6 +5,8 @@ Unit test file.
 import os
 import unittest
 
+os.environ["ISO_ENV_VERBOSE"] = "1"
+
 COMMAND = "iso-env"
 
 

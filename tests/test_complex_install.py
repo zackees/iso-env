@@ -2,8 +2,11 @@
 Unit test file.
 """
 
+import os
 import unittest
 from pathlib import Path
+
+os.environ["ISO_ENV_VERBOSE"] = "1"
 
 from iso_env import IsoEnv, IsoEnvArgs, PyProjectToml
 

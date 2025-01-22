@@ -1,6 +1,6 @@
 import subprocess
 
-from iso_env.api import _get_env, install, installed, purge, to_full_cmd_str
+from iso_env.api import _get_env, install, installed, purge, to_full_cmd_list
 from iso_env.types import IsoEnvArgs
 from iso_env.util import get_verbose_from_env
 
@@ -17,6 +17,6 @@ def run(
         purge(args.venv_path)
         install(args, verbose=verbose)
     env = _get_env(**process_args)
-    full_cmd_str = to_full_cmd_str(args, cmd_list, verbose=verbose, **process_args)
-    cp = subprocess.run(full_cmd_str, env=env, **process_args)
+    full_cmd_list = to_full_cmd_list(args, cmd_list, verbose=verbose, **process_args)
+    cp = subprocess.run(full_cmd_list, env=env, **process_args)
     return cp

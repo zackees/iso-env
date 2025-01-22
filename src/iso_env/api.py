@@ -39,7 +39,7 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
     """Uses isolated_environment to install."""
     # env: dict = dict(os.environ)
     try:
-        path = args.venv_path
+        path = args.venv_path.resolve()
         if installed(args, verbose=verbose):
             if verbose:
                 print(f"{path} is already installed.")
@@ -49,13 +49,12 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
         # Install using isolated_environment
         path.mkdir(exist_ok=True, parents=True)
         cmd_list = ["uv", "venv"]
-        # cmd_str =
+        cmd_str = subprocess.list2cmdline(cmd_list)
         if verbose:
-            cmd_str = subprocess.list2cmdline(cmd_list)
             print(f"Installing in {path} using command: {cmd_str}")
         try:
             subprocess.run(
-                cmd_list,
+                cmd_str,
                 cwd=str(path),
                 check=True,
                 capture_output=True,
@@ -72,7 +71,7 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
             print(f"Installing in {path} using command: {cmd_str}")
         try:
             _ = subprocess.run(
-                cmd_list,
+                cmd_str,
                 cwd=str(path),
                 check=True,
                 capture_output=True,
