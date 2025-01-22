@@ -2,13 +2,11 @@
 Unit test file.
 """
 
-import os
 import shutil
 import subprocess
 from pathlib import Path
 
 from iso_env.types import IsoEnvArgs, PyProjectToml, Requirements
-from iso_env.util import get_verbose_from_env, to_full_cmd_list
 
 
 def _to_requirements(build_info: Requirements) -> PyProjectToml:
@@ -135,43 +133,3 @@ def installed(args: IsoEnvArgs, verbose: bool) -> bool:
     if verbose:
         print(f"Installed: {out}")
     return out
-
-
-def open_proc(
-    args: IsoEnvArgs,
-    cmd_list: list[str],
-    verbose: bool | None = None,
-    **process_args,
-) -> subprocess.Popen:
-    """Runs the command using the isolated environment."""
-    verbose = verbose if verbose is not None else get_verbose_from_env()
-    if not installed(args, verbose=verbose):
-        purge(args.venv_path)
-        install(args, verbose=verbose)
-    full_cmd_list = to_full_cmd_list(args, cmd_list, verbose=verbose, **process_args)
-    shell = process_args.pop("shell", True)
-    env = _get_env(**process_args)
-    if verbose:
-        full_path = Path(".").resolve()
-        full_cmd_str = subprocess.list2cmdline(full_cmd_list)
-        print(f"Running in {full_path}: {full_cmd_str}")
-
-    env = _get_env(**process_args)
-    proc = subprocess.Popen(
-        full_cmd_list,
-        shell=shell,
-        env=env,
-        **process_args,
-    )
-    return proc
-
-
-def _get_env(**process_args) -> dict[str, str]:
-    if "env" in process_args:
-        env = process_args["env"]
-        process_args.pop("env")
-    else:
-        env = dict(os.environ)
-    if "VIRTUAL_ENV" in env:
-        del env["VIRTUAL_ENV"]
-    return env

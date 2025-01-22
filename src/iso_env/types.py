@@ -42,6 +42,6 @@ class IsoEnv:
         return run(self.args, cmd_list, **process_args)
 
     def open_proc(self, cmd_list: list[str], **process_args) -> subprocess.Popen:
-        from iso_env.api import open_proc
+        from iso_env.run import open_proc
 
         return open_proc(self.args, cmd_list, **process_args)
