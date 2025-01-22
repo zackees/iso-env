@@ -2,7 +2,6 @@
 Unit test file.
 """
 
-import os
 import shutil
 import subprocess
 import sys
@@ -169,7 +168,6 @@ def open_proc(
         purge(args.venv_path)
         install(args, verbose=verbose)
     full_cmd_str = _to_full_cmd_str(args, cmd_list, verbose=verbose, **process_args)
-    env = dict(os.environ)
     shell = process_args.pop("shell", True)
     if verbose:
         full_path = Path(".").resolve()
@@ -177,7 +175,6 @@ def open_proc(
 
     proc = subprocess.Popen(
         cmd_list,
-        env=env,
         shell=shell,
         **process_args,
     )
