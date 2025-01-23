@@ -60,7 +60,7 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
                 check=True,
                 capture_output=True,
                 text=True,
-                shell=True,
+                shell=False,
             )
         except subprocess.CalledProcessError as e:
             print(f"Error creating venv: {e}\n: {e.stdout}, \n{e.stderr}")
