@@ -48,20 +48,6 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
         path.mkdir(exist_ok=True, parents=True)
         cmd_list = ["uv", "venv"]
         cmd_str = subprocess.list2cmdline(cmd_list)
-        if verbose:
-            print(f"Installing in {path} using command: {cmd_str}")
-        try:
-            subprocess.run(
-                cmd_str,
-                cwd=str(path),
-                check=True,
-                capture_output=True,
-                text=True,
-                shell=True,
-            )
-        except subprocess.CalledProcessError as e:
-            print(f"Error creating venv: {e}\n: {e.stdout}, \n{e.stderr}")
-            raise
         py_project_toml_path = path / "pyproject.toml"
         py_project_toml_path.write_text(str(py_project_toml), encoding="utf-8")
         if verbose:
