@@ -42,11 +42,13 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
             if verbose:
                 print(f"{path} is already installed.")
             return
+        uv = shutil.which("uv")
+        assert uv, "uv not found."
         py_project_toml = _to_pyproject_toml(args.build_info)
         # Print installing message
         # Install using isolated_environment
         path.mkdir(exist_ok=True, parents=True)
-        cmd_list = ["uv", "venv"]
+        cmd_list = [uv, "venv"]
         cmd_str = subprocess.list2cmdline(cmd_list)
         py_project_toml_path = path / "pyproject.toml"
         py_project_toml_path.write_text(str(py_project_toml), encoding="utf-8")
@@ -55,7 +57,7 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
             print(f"Installing in {path} using command: {cmd_str}")
         try:
             _ = subprocess.run(
-                cmd_str,
+                cmd_list,
                 cwd=str(path),
                 check=True,
                 capture_output=True,
