@@ -121,6 +121,6 @@ Run `./lint` to find linting errors.
 
 # Footguns
 
-Please don't use `shell=True` when you run python unless you absolutely need to. Why? Because on Linux, if you are running a script and you have any errors, instead of bombing out immediately, python will drop you into a command terminal. This only happens on Linux (and maybe mac). It's a very nasty bug when you try and run your scripts on linux, causing your scripts to hang. The workaround is to use `shutil.which(progname_str)` and pass the resulting full path into `iso.run([...], shell=False)`
+Please don't use `shell=True` when you run python unless you absolutely need to. Why? Because on Linux, if you are running a script and you have any errors, instead of bombing out immediately, python will drop you into a command terminal. This only happens on Linux (and maybe mac). It's a very nasty bug when you try and run your scripts on linux, causing your scripts to hang. The workaround is to use `shutil.which(progname_str)` and pass the resulting full path into `iso.run([progname_str, ...], shell=False)`
 
 
