@@ -10,6 +10,8 @@
 
 # About
 
+Got an AI app? Are you in dependency hell because of `pytorch`? Well, so was I...
+
 Once upon a time I wanted to release an AI tool called `transcribe-anything` to tie a bunch of AI tools together to do translations across Windows/Mac/Linux without any complicated setup. To do this, I made `isolated-environment`, a package built ontop of `venv`. It was extremely messy but got the job done, and `transcribe-anything` surged in popularity. Fast forward a year later and `uv` comes out. `uv-iso-env` is a remake of `isolated-environment` but built on top of `uv`, the way god intended it.
 
 # Simple Example
