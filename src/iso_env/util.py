@@ -1,5 +1,5 @@
 import os
-import sys
+import shutil
 
 from iso_env.types import IsoEnvArgs
 
@@ -11,16 +11,12 @@ def get_verbose_from_env() -> bool:
 def to_full_cmd_list(
     args: IsoEnvArgs,
     cmd_list: list[str],
-    verbose: bool | None = None,
     **process_args,  # needed to capture unexpected arguments
 ) -> list[str]:
-    verbose = verbose if verbose is not None else get_verbose_from_env()
-
-    python_exe = sys.executable
+    uv = shutil.which("uv")
+    assert uv is not None, "uv not found."
     preamble = [
-        python_exe,
-        "-m",
-        "uv",
+        uv,
         "run",
         "--project",
         str(args.venv_path),
