@@ -15,7 +15,7 @@
 import unittest
 from pathlib import Path
 
-from iso_env.api import IsoEnv, IsoEnvArgs, Requirements
+from iso_env import IsoEnv, IsoEnvArgs, Requirements
 
 REQUIREMENTS_TXT = """
 static-ffmpeg
