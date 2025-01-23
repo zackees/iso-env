@@ -6,6 +6,11 @@
 [![Ubuntu_Tests](https://github.com/zackees/iso-env/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/zackees/iso-env/actions/workflows/test_ubuntu.yml)
 [![Win_Tests](https://github.com/zackees/iso-env/actions/workflows/test_win.yml/badge.svg)](https://github.com/zackees/iso-env/actions/workflows/test_win.yml)
 
+![image](https://github.com/user-attachments/assets/b7adcbac-0400-4f72-a0cd-3a4f2bea3b4c)
+
+# About
+
+Once upon a time I wanted to release an AI tool called `transcribe-anything` to tie a bunch of AI tools together to do translations across Windows/Mac/Linux without any complicated setup. To do this, I made `isolated-environment`, a package built ontop of `venv`. It was extremely messy but got the job done, and `transcribe-anything` surged in popularity. Fast forward a year later and `uv` comes out. `uv-iso-env` is a remake of `isolated-environment` but built on top of `uv`, the way god intended it.
 
 # Simple Example
 
