@@ -12,7 +12,7 @@ license = { text = "BSD 3-Clause License" }
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
     "twine>=6.0.1",
-    "uv",
+    "uv>=0.5.22",
 ]
 # Change this with the version number bump.
 version = "1.0.33"
