@@ -4,6 +4,7 @@ Unit test file.
 
 import shutil
 import subprocess
+import warnings
 from pathlib import Path
 
 from iso_env.types import IsoEnvArgs, PyProjectToml, Requirements
@@ -68,6 +69,34 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
             print(f"Error creating venv: {e}\n: {e.stdout}, \n{e.stderr}")
             raise
 
+        # now compile the requirements to requiresments.compiled.txt
+        try:
+            cmd_list = [
+                uv,
+                "pip",
+                "compile",
+                "pyproject.toml",
+                "--output-file",
+                "requirements.compiled.txt",
+            ]
+            cmd_str = subprocess.list2cmdline(cmd_list)
+            if verbose:
+                print(f"Compiling requirements using command: {cmd_str}")
+            _ = subprocess.run(
+                cmd_list,
+                cwd=str(path),
+                check=True,
+                capture_output=True,
+                text=True,
+                shell=False,
+            )
+        except subprocess.CalledProcessError as e:
+            rtn = e.returncode
+            stdout = e.stdout
+            stderr = e.stderr
+            warnings.warn(
+                f"Error compiling requirements at {str(path)}: {rtn}\n{stdout}\n{stderr}"
+            )
         (path / "installed").touch()
     except KeyboardInterrupt:
         pass
