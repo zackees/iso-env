@@ -44,5 +44,8 @@ profile = "black"
 ignore_missing_imports = true
 disable_error_code = ["import-untyped"]
 
+[tool.uv.workspace]
+members = ["tmp"]
+
 [project.scripts]
 iso-env = "iso_env.cli:main"
