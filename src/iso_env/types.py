@@ -9,7 +9,11 @@ class Requirements:
     python_version: str | None = None
 
     def __post_init__(self):
+        from iso_env.util import check_python_str
+
         self.content = self.content.strip()
+        if self.python_version is not None:
+            check_python_str(self.python_version)
 
     def __repr__(self):
         return self.content
