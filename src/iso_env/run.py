@@ -8,6 +8,16 @@ from iso_env.types import IsoEnvArgs
 from iso_env.util import get_verbose_from_env, to_full_cmd_list
 
 
+def _to_str(src: bytes | str | list[str] | None) -> str:
+    if src is None:
+        return ""
+    if isinstance(src, list):
+        return subprocess.list2cmdline(src)
+    if isinstance(src, str):
+        return src
+    return src.decode("utf-8")
+
+
 def run(
     args: IsoEnvArgs,
     cmd_list: list[str],
@@ -30,9 +40,10 @@ def run(
         cp = subprocess.run(full_cmd_list, env=env, check=check, **process_args)
         return cp
     except subprocess.CalledProcessError as exc:
-        stderr = exc.stderr
-        stdout = exc.stdout
-        error_msg = f"Failed to run: {exc.cmd} {exc.returncode}\nstdout: {stdout}\nstderr: {stderr}"
+        stderr = _to_str(exc.stderr)
+        stdout = _to_str(exc.stdout)
+        cmd_str = _to_str(full_cmd_list)
+        error_msg = f"\n\nFailed to run:\n  {cmd_str}\n{exc.returncode}\n\nstdout: {stdout}\nstderr: {stderr}\n\n"
         warnings.warn(error_msg)
         raise
 
