@@ -37,7 +37,10 @@ def run(
     full_cmd_list = to_full_cmd_list(args, cmd_list, verbose=verbose, **process_args)
     check = process_args.pop("check", True)
     try:
-        cp = subprocess.run(full_cmd_list, env=env, check=check, **process_args)
+        shell = process_args.pop("shell", False)
+        cp = subprocess.run(
+            full_cmd_list, env=env, check=check, shell=shell, **process_args
+        )
         return cp
     except subprocess.CalledProcessError as exc:
         warn_errors = os.environ.get("ISO_ENV_WARN_ERRORS", "0") == "1"
