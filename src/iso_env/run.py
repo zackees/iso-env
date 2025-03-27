@@ -40,11 +40,13 @@ def run(
         cp = subprocess.run(full_cmd_list, env=env, check=check, **process_args)
         return cp
     except subprocess.CalledProcessError as exc:
-        stderr = _to_str(exc.stderr)
-        stdout = _to_str(exc.stdout)
-        cmd_str = _to_str(full_cmd_list)
-        error_msg = f"\n\nFailed to run:\n  {cmd_str}\n{exc.returncode}\n\nstdout: {stdout}\nstderr: {stderr}\n\n"
-        warnings.warn(error_msg)
+        warn_errors = os.environ.get("ISO_ENV_WARN_ERRORS", "0") == "1"
+        if warn_errors:
+            stderr = _to_str(exc.stderr)
+            stdout = _to_str(exc.stdout)
+            cmd_str = _to_str(full_cmd_list)
+            error_msg = f"\n\nFailed to run:\n  {cmd_str}\n{exc.returncode}\n\nstdout: {stdout}\nstderr: {stderr}\n\n"
+            warnings.warn(error_msg)
         raise
 
 
