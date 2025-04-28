@@ -132,7 +132,7 @@ def installed(args: IsoEnvArgs, verbose: bool) -> bool:
     venv_path = args.venv_path
     if not venv_path.exists():
         if verbose:
-            print(f"{venv_path} does not exist.")
+            print(f"{venv_path.absolute()} does not exist.")
         return False
     pyproject_toml_path = venv_path / "pyproject.toml"
     if not pyproject_toml_path.exists():
