@@ -3,9 +3,17 @@ import subprocess
 import warnings
 from pathlib import Path
 
-from iso_env.api import install, installed, purge
+from filelock import FileLock
+
+from iso_env.api import _install_impl, installed, purge
 from iso_env.types import IsoEnvArgs
 from iso_env.util import get_verbose_from_env, to_full_cmd_list
+
+
+def _get_lock_path(venv_path: Path) -> Path:
+    """Get the lock file path for a given venv path."""
+    resolved_path = venv_path.resolve()
+    return resolved_path.parent / f".{resolved_path.name}.lock"
 
 
 def _to_str(src: bytes | str | list[str] | None) -> str:
@@ -26,9 +34,15 @@ def run(
 ) -> subprocess.CompletedProcess:
     """Runs the command using the isolated environment."""
     verbose = verbose if verbose is not None else get_verbose_from_env()
-    if not installed(args, verbose=verbose):
-        purge(args.venv_path)
-        install(args, verbose=verbose)
+
+    # Use file lock to protect the check-then-act pattern
+    lock_path = _get_lock_path(args.venv_path)
+    lock_path.parent.mkdir(exist_ok=True, parents=True)
+
+    with FileLock(str(lock_path), timeout=300):
+        if not installed(args, verbose=verbose):
+            purge(args.venv_path)
+            _install_impl(args, verbose=verbose)
     env = dict(os.environ)
     if "env" in process_args:
         env = process_args.pop("env")
@@ -61,9 +75,15 @@ def open_proc(
 ) -> subprocess.Popen:
     """Runs the command using the isolated environment."""
     verbose = verbose if verbose is not None else get_verbose_from_env()
-    if not installed(args, verbose=verbose):
-        purge(args.venv_path)
-        install(args, verbose=verbose)
+
+    # Use file lock to protect the check-then-act pattern
+    lock_path = _get_lock_path(args.venv_path)
+    lock_path.parent.mkdir(exist_ok=True, parents=True)
+
+    with FileLock(str(lock_path), timeout=300):
+        if not installed(args, verbose=verbose):
+            purge(args.venv_path)
+            _install_impl(args, verbose=verbose)
     full_cmd_list = to_full_cmd_list(args, cmd_list, verbose=verbose, **process_args)
     shell = process_args.pop("shell", False)
     if verbose:

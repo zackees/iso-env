@@ -7,6 +7,8 @@ import subprocess
 import warnings
 from pathlib import Path
 
+from filelock import FileLock
+
 from iso_env.types import IsoEnvArgs, PyProjectToml, Requirements
 
 
@@ -33,16 +35,17 @@ def _to_pyproject_toml(build_info: Requirements | PyProjectToml) -> PyProjectTom
     return build_info
 
 
-# def install(path: Path, requirements_text: str) -> None:
-def install(args: IsoEnvArgs, verbose: bool) -> None:
-    """Uses isolated_environment to install."""
-    # env: dict = dict(os.environ)
+def _install_impl(args: IsoEnvArgs, verbose: bool) -> None:
+    """Implementation of install without locking - should be called with lock held."""
+    path = args.venv_path.resolve()
+
+    # Re-check if installed after acquiring lock (another process may have installed it)
+    if installed(args, verbose=verbose):
+        if verbose:
+            print(f"{path} is already installed.")
+        return
+
     try:
-        path = args.venv_path.resolve()
-        if installed(args, verbose=verbose):
-            if verbose:
-                print(f"{path} is already installed.")
-            return
         uv = shutil.which("uv")
         assert uv, "uv not found."
         py_project_toml = _to_pyproject_toml(args.build_info)
@@ -100,6 +103,19 @@ def install(args: IsoEnvArgs, verbose: bool) -> None:
         (path / "installed").touch()
     except KeyboardInterrupt:
         pass
+
+
+# def install(path: Path, requirements_text: str) -> None:
+def install(args: IsoEnvArgs, verbose: bool) -> None:
+    """Uses isolated_environment to install."""
+    path = args.venv_path.resolve()
+    # Create lock file path - use parent directory to ensure it exists
+    lock_path = path.parent / f".{path.name}.lock"
+    lock_path.parent.mkdir(exist_ok=True, parents=True)
+
+    # Use file lock to ensure mutual exclusion during installation
+    with FileLock(str(lock_path), timeout=300):  # 5 minute timeout
+        _install_impl(args, verbose)
 
 
 def purge(venv_path: Path) -> int:
