@@ -4,6 +4,7 @@ Unit test file.
 
 import shutil
 import subprocess
+import sys
 import warnings
 from pathlib import Path
 
@@ -69,8 +70,19 @@ def _install_impl(args: IsoEnvArgs, verbose: bool) -> None:
                 shell=False,
             )
         except subprocess.CalledProcessError as e:
-            print(f"Error creating venv: {e}\n: {e.stdout}, \n{e.stderr}")
-            raise
+            # Surface uv's stderr in the propagated exception so downstream
+            # callers (and end users) get an actionable diagnostic instead
+            # of a bare "non-zero exit status N". See iso-env#1.
+            stderr_tail = (e.stderr or "").strip()
+            sys.stderr.write(
+                f"iso_env: `uv venv` failed in {path} (exit {e.returncode})\n"
+            )
+            if stderr_tail:
+                sys.stderr.write(stderr_tail + "\n")
+            raise RuntimeError(
+                f"`uv venv` failed (exit {e.returncode}) in {path}: "
+                f"{stderr_tail or '<no stderr captured>'}"
+            ) from e
 
         # now compile the requirements to requiresments.compiled.txt
         try:
